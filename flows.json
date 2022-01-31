@@ -1,0 +1,289 @@
+[
+    {
+        "id": "4a3829a18957d59a",
+        "type": "tab",
+        "label": "フロー 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "cacd4306c2f940e9",
+        "type": "inject",
+        "z": "4a3829a18957d59a",
+        "name": "1分ごとに繰返し",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "60",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 280,
+        "wires": [
+            [
+                "e8fa287b8fe4a0ed"
+            ]
+        ]
+    },
+    {
+        "id": "7fbc386ea29eb594",
+        "type": "image",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "width": 160,
+        "data": "payload",
+        "dataType": "msg",
+        "thumbnail": false,
+        "active": true,
+        "pass": false,
+        "outputs": 0,
+        "x": 900,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "40c26c215839bdec",
+        "type": "file in",
+        "z": "4a3829a18957d59a",
+        "name": "wordcloud.pngの読込",
+        "filename": "wordcloud.png",
+        "format": "",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 640,
+        "y": 340,
+        "wires": [
+            [
+                "7fbc386ea29eb594",
+                "0703192509c0c161"
+            ]
+        ]
+    },
+    {
+        "id": "e8fa287b8fe4a0ed",
+        "type": "exec",
+        "z": "4a3829a18957d59a",
+        "command": "wordcloud_cli",
+        "addpay": "",
+        "append": "--text log.txt --width 640 --height 480 --imagefile wordcloud.png",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "wordcloud_cliの実行",
+        "x": 400,
+        "y": 280,
+        "wires": [
+            [
+                "40c26c215839bdec"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "0703192509c0c161",
+        "type": "base64",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "action": "",
+        "property": "payload",
+        "x": 620,
+        "y": 540,
+        "wires": [
+            [
+                "5c04a6e0ddfae16a"
+            ]
+        ]
+    },
+    {
+        "id": "5c04a6e0ddfae16a",
+        "type": "ui_template",
+        "z": "4a3829a18957d59a",
+        "group": "4f209fcf424f4d03",
+        "name": "Dashboardに画像を表示",
+        "order": 1,
+        "width": 24,
+        "height": 12,
+        "format": "<div>\n      <img src=\"data:image/png;base64,{{msg.payload}}\">\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 870,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8f47fe793d9d9d1e",
+        "type": "twitter in",
+        "z": "4a3829a18957d59a",
+        "twitter": "",
+        "tags": "#nhk",
+        "user": "false",
+        "name": "",
+        "inputs": 1,
+        "x": 130,
+        "y": 40,
+        "wires": [
+            [
+                "c28c9fb98209d69d"
+            ]
+        ]
+    },
+    {
+        "id": "38bb2a7b21d9ae77",
+        "type": "Kuromoji Tokenizer",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "x": 230,
+        "y": 140,
+        "wires": [
+            [
+                "558fa53b57856525"
+            ]
+        ]
+    },
+    {
+        "id": "c28c9fb98209d69d",
+        "type": "template",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{tweet.text}}",
+        "output": "str",
+        "x": 260,
+        "y": 80,
+        "wires": [
+            [
+                "38bb2a7b21d9ae77"
+            ]
+        ]
+    },
+    {
+        "id": "480631cd937bcf35",
+        "type": "file",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "filename": "log.txt",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 850,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "558fa53b57856525",
+        "type": "split",
+        "z": "4a3829a18957d59a",
+        "name": "分かち書き分割",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 240,
+        "y": 200,
+        "wires": [
+            [
+                "1d08dab42ad54d5b"
+            ]
+        ]
+    },
+    {
+        "id": "1d08dab42ad54d5b",
+        "type": "switch",
+        "z": "4a3829a18957d59a",
+        "name": "名詞取り出し",
+        "property": "payload.pos",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "名詞",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 460,
+        "y": 200,
+        "wires": [
+            [
+                "2380fb4c5b0991c5"
+            ]
+        ]
+    },
+    {
+        "id": "2380fb4c5b0991c5",
+        "type": "change",
+        "z": "4a3829a18957d59a",
+        "name": "単語取出し",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.surface_form",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 670,
+        "y": 200,
+        "wires": [
+            [
+                "480631cd937bcf35"
+            ]
+        ]
+    },
+    {
+        "id": "4f209fcf424f4d03",
+        "type": "ui_group",
+        "name": "Tweet#NHK",
+        "tab": "e235f1263ced183c",
+        "order": 1,
+        "disp": true,
+        "width": "24",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "e235f1263ced183c",
+        "type": "ui_tab",
+        "name": "wordcloud画像",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
