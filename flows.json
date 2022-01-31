@@ -8,51 +8,6 @@
         "env": []
     },
     {
-        "id": "cacd4306c2f940e9",
-        "type": "inject",
-        "z": "4a3829a18957d59a",
-        "name": "1分ごとに繰返し",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "60",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "60",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 170,
-        "y": 280,
-        "wires": [
-            [
-                "e8fa287b8fe4a0ed"
-            ]
-        ]
-    },
-    {
-        "id": "7fbc386ea29eb594",
-        "type": "image",
-        "z": "4a3829a18957d59a",
-        "name": "",
-        "width": 160,
-        "data": "payload",
-        "dataType": "msg",
-        "thumbnail": false,
-        "active": true,
-        "pass": false,
-        "outputs": 0,
-        "x": 900,
-        "y": 340,
-        "wires": []
-    },
-    {
         "id": "40c26c215839bdec",
         "type": "file in",
         "z": "4a3829a18957d59a",
@@ -63,8 +18,8 @@
         "sendError": false,
         "encoding": "none",
         "allProps": false,
-        "x": 640,
-        "y": 340,
+        "x": 600,
+        "y": 320,
         "wires": [
             [
                 "7fbc386ea29eb594",
@@ -76,16 +31,16 @@
         "id": "e8fa287b8fe4a0ed",
         "type": "exec",
         "z": "4a3829a18957d59a",
-        "command": "wordcloud_cli",
+        "command": "/home/pi/.local/bin/wordcloud_cli",
         "addpay": "",
-        "append": "--text log.txt --width 640 --height 480 --imagefile wordcloud.png",
+        "append": "--text log.txt --fontfile IBMPlexSansJP-Bold.ttf --width 640 --height 480 --imagefile wordcloud.png",
         "useSpawn": "false",
         "timer": "",
         "winHide": false,
         "oldrc": false,
         "name": "wordcloud_cliの実行",
-        "x": 400,
-        "y": 280,
+        "x": 340,
+        "y": 320,
         "wires": [
             [
                 "40c26c215839bdec"
@@ -95,14 +50,181 @@
         ]
     },
     {
+        "id": "c28c9fb98209d69d",
+        "type": "template",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{tweet.text}}",
+        "output": "str",
+        "x": 400,
+        "y": 40,
+        "wires": [
+            [
+                "d395166b509d2a0a"
+            ]
+        ]
+    },
+    {
+        "id": "480631cd937bcf35",
+        "type": "file",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "filename": "log.txt",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 330,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "558fa53b57856525",
+        "type": "split",
+        "z": "4a3829a18957d59a",
+        "name": "分かち書き分割",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 380,
+        "y": 120,
+        "wires": [
+            [
+                "1d08dab42ad54d5b"
+            ]
+        ]
+    },
+    {
+        "id": "1d08dab42ad54d5b",
+        "type": "switch",
+        "z": "4a3829a18957d59a",
+        "name": "品詞取り出し",
+        "property": "payload.pos",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "動詞",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "形容詞",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "形容動詞",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "固有名詞",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "名詞",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 5,
+        "x": 600,
+        "y": 120,
+        "wires": [
+            [
+                "471cb7ebf0906a13"
+            ],
+            [
+                "471cb7ebf0906a13"
+            ],
+            [
+                "471cb7ebf0906a13"
+            ],
+            [
+                "2380fb4c5b0991c5"
+            ],
+            [
+                "2380fb4c5b0991c5"
+            ]
+        ]
+    },
+    {
+        "id": "2380fb4c5b0991c5",
+        "type": "change",
+        "z": "4a3829a18957d59a",
+        "name": "単語取出し",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.basic_form",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1030,
+        "y": 140,
+        "wires": [
+            [
+                "adefcdc8d054769b"
+            ]
+        ]
+    },
+    {
+        "id": "7fbc386ea29eb594",
+        "type": "image",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "width": "320",
+        "data": "payload",
+        "dataType": "msg",
+        "thumbnail": false,
+        "active": true,
+        "pass": false,
+        "outputs": 0,
+        "x": 920,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "38bb2a7b21d9ae77",
+        "type": "Kuromoji Tokenizer",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "x": 150,
+        "y": 120,
+        "wires": [
+            [
+                "558fa53b57856525"
+            ]
+        ]
+    },
+    {
         "id": "0703192509c0c161",
         "type": "base64",
         "z": "4a3829a18957d59a",
         "name": "",
         "action": "",
         "property": "payload",
-        "x": 620,
-        "y": 540,
+        "x": 800,
+        "y": 320,
         "wires": [
             [
                 "5c04a6e0ddfae16a"
@@ -124,115 +246,48 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 870,
-        "y": 540,
+        "x": 1030,
+        "y": 320,
         "wires": [
             []
         ]
     },
     {
-        "id": "8f47fe793d9d9d1e",
+        "id": "19aa16211ebcf92b",
         "type": "twitter in",
         "z": "4a3829a18957d59a",
         "twitter": "",
         "tags": "#nhk",
         "user": "false",
         "name": "",
-        "inputs": 1,
-        "x": 130,
+        "inputs": 0,
+        "x": 110,
         "y": 40,
         "wires": [
             [
-                "c28c9fb98209d69d"
+                "f4df6644deaf67a3"
             ]
         ]
     },
     {
-        "id": "38bb2a7b21d9ae77",
-        "type": "Kuromoji Tokenizer",
-        "z": "4a3829a18957d59a",
-        "name": "",
-        "x": 230,
-        "y": 140,
-        "wires": [
-            [
-                "558fa53b57856525"
-            ]
-        ]
-    },
-    {
-        "id": "c28c9fb98209d69d",
-        "type": "template",
-        "z": "4a3829a18957d59a",
-        "name": "",
-        "field": "payload",
-        "fieldType": "msg",
-        "format": "handlebars",
-        "syntax": "mustache",
-        "template": "{{tweet.text}}",
-        "output": "str",
-        "x": 260,
-        "y": 80,
-        "wires": [
-            [
-                "38bb2a7b21d9ae77"
-            ]
-        ]
-    },
-    {
-        "id": "480631cd937bcf35",
-        "type": "file",
-        "z": "4a3829a18957d59a",
-        "name": "",
-        "filename": "log.txt",
-        "appendNewline": true,
-        "createDir": false,
-        "overwriteFile": "false",
-        "encoding": "none",
-        "x": 850,
-        "y": 200,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "558fa53b57856525",
-        "type": "split",
-        "z": "4a3829a18957d59a",
-        "name": "分かち書き分割",
-        "splt": "\\n",
-        "spltType": "str",
-        "arraySplt": 1,
-        "arraySpltType": "len",
-        "stream": false,
-        "addname": "",
-        "x": 240,
-        "y": 200,
-        "wires": [
-            [
-                "1d08dab42ad54d5b"
-            ]
-        ]
-    },
-    {
-        "id": "1d08dab42ad54d5b",
+        "id": "471cb7ebf0906a13",
         "type": "switch",
         "z": "4a3829a18957d59a",
-        "name": "名詞取り出し",
-        "property": "payload.pos",
+        "name": "語句基本形取得",
+        "property": "payload.pos_detail_1",
         "propertyType": "msg",
         "rules": [
             {
                 "t": "eq",
-                "v": "名詞",
+                "v": "自立",
                 "vt": "str"
             }
         ],
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 460,
-        "y": 200,
+        "x": 820,
+        "y": 100,
         "wires": [
             [
                 "2380fb4c5b0991c5"
@@ -240,17 +295,257 @@
         ]
     },
     {
-        "id": "2380fb4c5b0991c5",
-        "type": "change",
+        "id": "d395166b509d2a0a",
+        "type": "function",
         "z": "4a3829a18957d59a",
-        "name": "単語取出し",
+        "name": "",
+        "func": "let text = msg.tweet.text;\n\n// アカウント抽出\nconst accounts = text.match(/[@＠][A-Za-z0-9._-]+/gm);\n//console.log(accounts);\n\n// ハッシュタグ抽出\nconst tags = text.match(/[#＃][Ａ-Ｚａ-ｚA-Za-z一-鿆0-9０-９ぁ-ヶｦ-ﾟー._-]+/gm);\n//console.log(tags);\n//msg.payload = tags;\n\n// URL抽出\nconst urls = text.match(/([a-z0-9]|\\.)+\\.(com|net|jp|org|io|info|me|ma|gl|ly|gd|cc|nu|tt).*/gm);\n//console.log(urls);\n\ntext = text.replace(/[@＠][A-Za-z0-9._-]+/gm, \"\");\ntext = text.replace(/[#＃][Ａ-Ｚａ-ｚA-Za-z一-鿆0-9０-９ぁ-ヶｦ-ﾟー._-]+/gm, \"\");\ntext = text.replace(/https?:\\/\\/[-_.!~*\\'()a-zA-Z0-9;\\/?:\\@&=+\\$,%#]+/g, \"\") \ntext = text.replace(\"\\d\", \"\");\ntext = text.replace(\"\\a\", \"\");\nmsg.payload = text;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 40,
+        "wires": [
+            [
+                "38bb2a7b21d9ae77"
+            ]
+        ]
+    },
+    {
+        "id": "f4df6644deaf67a3",
+        "type": "switch",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
         "rules": [
             {
-                "t": "set",
+                "t": "regex",
+                "v": "^RT",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 250,
+        "y": 40,
+        "wires": [
+            [],
+            [
+                "c28c9fb98209d69d"
+            ]
+        ]
+    },
+    {
+        "id": "adefcdc8d054769b",
+        "type": "change",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "rules": [
+            {
+                "t": "change",
                 "p": "payload",
                 "pt": "msg",
-                "to": "payload.surface_form",
-                "tot": "msg"
+                "from": "する",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "なる",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "みる",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "思う",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "いう",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "ちゃん",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "の",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "ら",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "さん",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "こと",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "ある",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "も",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "これ",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "できる",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "くん",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "なか",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "あたり",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "ん",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "ところ",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "いい",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "やる",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
+            },
+            {
+                "t": "change",
+                "p": "payload",
+                "pt": "msg",
+                "from": "ない",
+                "fromt": "str",
+                "to": "",
+                "tot": "str"
             }
         ],
         "action": "",
@@ -258,13 +553,120 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 670,
+        "x": 140,
         "y": 200,
         "wires": [
             [
                 "480631cd937bcf35"
             ]
         ]
+    },
+    {
+        "id": "e1702d72d6837b25",
+        "type": "cron",
+        "z": "4a3829a18957d59a",
+        "name": "毎分画像生成",
+        "crontab": "*/1  *  *  *  *",
+        "x": 110,
+        "y": 320,
+        "wires": [
+            [
+                "e8fa287b8fe4a0ed"
+            ]
+        ]
+    },
+    {
+        "id": "bfecd18e9f4f1741",
+        "type": "cron",
+        "z": "4a3829a18957d59a",
+        "name": "1時間ごとにアーカイブ保存",
+        "crontab": "0 0-23/1 * * * ",
+        "x": 160,
+        "y": 460,
+        "wires": [
+            [
+                "6152b8de3b06d45a"
+            ]
+        ]
+    },
+    {
+        "id": "d9d96f2bd58fec4d",
+        "type": "exec",
+        "z": "4a3829a18957d59a",
+        "command": "cp",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "アーカイブ保存",
+        "x": 500,
+        "y": 520,
+        "wires": [
+            [
+                "25eb2495d8603ceb"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "6152b8de3b06d45a",
+        "type": "function",
+        "z": "4a3829a18957d59a",
+        "name": "アーカイブファイル名生成",
+        "func": "// ペイロードから日付オブジェクトを生成\nlet date = new Date(msg.payload);\n\n//年・月・日を取得する\nlet year = date.getFullYear();\nlet month = date.getMonth()+1;\nlet day = date.getDate();\nmonth = (\"0\" + month).slice(-2);\nday = (\"0\" + day).slice(-2);\n//時・分・秒を取得する\nlet hour = date.getHours();\nlet minute = date.getMinutes();\nhour = (\"0\" + hour).slice(-2);\nminute = (\"0\" + minute).slice(-2);\n\n// 日付文字列に変換して再度ペイロードをセット\nmsg.payload = \"wordcloud.png\"+\" \"+year+month+day+\"_\"+hour+minute+\".png\";\n// 次のノードへmsgオブジェクトを返す\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 520,
+        "wires": [
+            [
+                "d9d96f2bd58fec4d"
+            ]
+        ]
+    },
+    {
+        "id": "25eb2495d8603ceb",
+        "type": "exec",
+        "z": "4a3829a18957d59a",
+        "command": "rm",
+        "addpay": "",
+        "append": "log.txt",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "log.txt削除",
+        "x": 710,
+        "y": 520,
+        "wires": [
+            [
+                "dd51bb3949b3c68e"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "dd51bb3949b3c68e",
+        "type": "debug",
+        "z": "4a3829a18957d59a",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 650,
+        "y": 420,
+        "wires": []
     },
     {
         "id": "4f209fcf424f4d03",
